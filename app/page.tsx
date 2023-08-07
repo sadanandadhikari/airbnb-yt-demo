@@ -72,7 +72,7 @@ export default async function Home() {
     },
   ];
 
-  const cardsData: CardData[] = await getData();
+  const cardsData: CardData[] | undefined = getData();
 
   return (
     <div>
@@ -129,19 +129,23 @@ export default async function Home() {
   );
 }
 
-async function getData() {
-  try {
-    const res = await fetch("https://links.papareact.com/zp1", {
-      method: "GET",
-      agent: httpsAgent,
-    });
+const getData = (): CardData[] | undefined => {
+  let r = undefined;
+  async () => {
+    try {
+      const res = await fetch("https://links.papareact.com/zp1", {
+        method: "GET",
+        agent: httpsAgent,
+      });
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch data");
+      if (!res.ok) {
+        throw new Error("Failed to fetch data");
+      }
+
+      r = (await res.json()) as CardData[];
+    } catch (err) {
+      console.log(err);
     }
-
-    return await res.json();
-  } catch (err) {
-    console.log(err);
-  }
-}
+  };
+  return r;
+};
